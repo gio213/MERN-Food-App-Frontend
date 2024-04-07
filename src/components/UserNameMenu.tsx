@@ -33,7 +33,7 @@ const UserNameMenu = () => {
       <DropdownMenuContent className="flex flex-col w-[100px] h-[100px] rounded-sm gap-2 items-center justify-center bg-white">
         <DropdownMenuItem>
           <Link to="/user-profile" className="font-bold hover:text-orange-500">
-            Dashboard
+            User Profile
           </Link>
         </DropdownMenuItem>
         <Separator />
