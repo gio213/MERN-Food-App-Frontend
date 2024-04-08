@@ -3,6 +3,7 @@ import Layout from "./layouts/layout";
 import HomePage from "./pages/HomePage";
 import AuthCallBackPage from "./pages/AuthCallBackPage";
 import UserProfileFormPage from "./pages/UserPorfilePage";
+import PortecedRoute from "./auth/PortecedRoute";
 
 const AppRoutes = () => {
   return (
@@ -16,14 +17,18 @@ const AppRoutes = () => {
         }
       />
       <Route path="/auth-callback" element={<AuthCallBackPage />} />
-      <Route
-        path="/user-profile"
-        element={
-          <Layout showHero={false}>
-            <UserProfileFormPage />
-          </Layout>
-        }
-      />
+
+      <Route element={<PortecedRoute />}>
+        <Route
+          path="/user-profile"
+          element={
+            <Layout showHero={false}>
+              <UserProfileFormPage />
+            </Layout>
+          }
+        />
+      </Route>
+
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
