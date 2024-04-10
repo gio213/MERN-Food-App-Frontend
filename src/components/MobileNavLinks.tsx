@@ -12,6 +12,12 @@ const MobileNavLinks = () => {
       >
         User Profile
       </Link>
+      <Link
+        to={"manage-restaurant"}
+        className="flex bg-white items-center font-bold hover:text-orange-500"
+      >
+        Manage Restaurant
+      </Link>
 
       <Button
         onClick={() => logout()}

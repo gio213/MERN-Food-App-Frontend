@@ -19,7 +19,7 @@ const UserNameMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center px-3 font-bold hover:text-orange-500 gap-2">
         {user?.picture?.length ? (
-          <Avatar className="border-orange-500 border-2">
+          <Avatar>
             <AvatarImage
               className="animate-pulse"
               src={user?.picture}
