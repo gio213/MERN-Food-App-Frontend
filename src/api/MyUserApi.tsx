@@ -21,6 +21,7 @@ export const useGetMyUser = () => {
     if (!response.ok) {
       throw new Error("Error getting user");
     }
+    console.log(accessToken);
     return response.json();
   };
   const {
@@ -43,7 +44,6 @@ export const useCreateMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
   const createMyUserRequest = async (user: CreateUserRequest) => {
     const accessToken = await getAccessTokenSilently();
-    console.log("accessToken", accessToken);
     const response = await fetch(`${API_BASE_URL}/api/my/user`, {
       method: "POST",
       headers: {

@@ -3,6 +3,7 @@ import UserProfileForm from "@/forms/user-profile-form/UserProfileForm";
 
 const UserProfileFormPage = () => {
   const { currentUser, isLoading: isGetLoading } = useGetMyUser();
+  console.log(currentUser);
   const { updateUser, isLoading: isUpdateLoading } = useUpdateMyUser();
 
   if (isGetLoading) {

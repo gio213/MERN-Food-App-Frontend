@@ -18,21 +18,29 @@ import { useEffect } from "react";
 
 const formSchema = z.object({
   email: z.string().optional(),
-  name: z.string().min(1, "Name is required").max(255),
-  addressLine1: z.string().min(1, "Address Line 1 is required").max(255),
-  country: z.string().min(1, "Country is required").max(255),
-  city: z.string().min(1, "City is required").max(255),
+  name: z.string().min(1, "name is required"),
+  addressLine1: z.string().min(1, "Address Line 1 is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
 });
 
-type UserFormData = z.infer<typeof formSchema>;
+export type UserFormData = z.infer<typeof formSchema>;
 
 type Props = {
+  currentUser: User;
   onSave: (userProfileData: UserFormData) => void;
   isLoading: boolean;
-  currentUser: User;
+  title?: string;
+  buttonText?: string;
 };
 
-const UserProfileForm = ({ isLoading, onSave, currentUser }: Props) => {
+const UserProfileForm = ({
+  onSave,
+  isLoading,
+  currentUser,
+  title = "User Profile",
+  buttonText = "Submit",
+}: Props) => {
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: currentUser,
@@ -49,9 +57,9 @@ const UserProfileForm = ({ isLoading, onSave, currentUser }: Props) => {
         className="space-y-4 bg-gray-50 rounded-lg md:p-10"
       >
         <div>
-          <h2 className="text-2x font-bold">User Profile Form</h2>
+          <h2 className="text-2xl font-bold">{title}</h2>
           <FormDescription>
-            View and change your profile information.
+            View and change your profile information here
           </FormDescription>
         </div>
         <FormField
@@ -66,6 +74,7 @@ const UserProfileForm = ({ isLoading, onSave, currentUser }: Props) => {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="name"
@@ -124,8 +133,8 @@ const UserProfileForm = ({ isLoading, onSave, currentUser }: Props) => {
         {isLoading ? (
           <LoadingButton />
         ) : (
-          <Button className="bg-orange-500" type="submit">
-            Submit
+          <Button type="submit" className="bg-orange-500">
+            {buttonText}
           </Button>
         )}
       </form>

@@ -29,7 +29,7 @@ const UserNameMenu = () => {
         ) : (
           <CircleUser className="text-orange-500" />
         )}
-        {user?.email}
+        {`${user?.given_name} ${user?.family_name}`}{" "}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
