@@ -1,4 +1,4 @@
-import { CardItem } from "@/pages/DetailPage";
+import { CartItem } from "@/pages/DetailPage";
 import { Restaurant } from "@/types/types";
 import { CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -7,8 +7,8 @@ import { Separator } from "./ui/separator";
 
 type Props = {
   restaurant: Restaurant;
-  cardItems: CardItem[];
-  removeFfromCart: (cartItem: CardItem) => void;
+  cardItems: CartItem[];
+  removeFfromCart: (cartItem: CartItem) => void;
 };
 
 const OrderSummary = ({ restaurant, cardItems, removeFfromCart }: Props) => {
