@@ -7,6 +7,7 @@ import PortecedRoute from "./auth/PortecedRoute";
 import ManageRestaurantPage from "./pages/ManageRestaurantPage";
 import SearchPage from "./pages/SearchPage";
 import DetailPage from "./pages/DetailPage";
+import OrderStatus from "./pages/OrderStatus";
 
 const AppRoutes = () => {
   return (
@@ -51,6 +52,14 @@ const AppRoutes = () => {
           element={
             <Layout showHero={false}>
               <ManageRestaurantPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/order-status"
+          element={
+            <Layout showHero={false}>
+              <OrderStatus />
             </Layout>
           }
         />
