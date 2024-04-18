@@ -1,16 +1,17 @@
 import { useGetRestaurant } from "@/api/RestauratnApi";
-import CheckoutButton from "@/components/CheckoutButton";
 import MenuItem from "@/components/MenuItem";
 import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
-import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
-import { MenuItem as MenuItemType } from "@/types/types";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { MenuItem as MenuItemType } from "../types/types";
+import CheckoutButton from "@/components/CheckoutButton";
+import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
+import { useCreateCheckoutSession } from "@/api/OrderApi";
 
-export type CardItem = {
+export type CartItem = {
   _id: string;
   name: string;
   price: number;
@@ -19,26 +20,29 @@ export type CardItem = {
 
 const DetailPage = () => {
   const { restaurantId } = useParams();
-  const { isLoading, restaurant } = useGetRestaurant(restaurantId);
+  const { restaurant, isLoading } = useGetRestaurant(restaurantId);
+  const { createCheckoutSession, isLoading: isCheckoutLoading } =
+    useCreateCheckoutSession();
 
-  const [cardItems, setCardItems] = useState<CardItem[]>(() => {
-    const storedCardItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
-    return storedCardItems ? JSON.parse(storedCardItems) : [];
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
+    return storedCartItems ? JSON.parse(storedCartItems) : [];
   });
 
-  const addToCard = (menuItem: MenuItemType) => {
-    setCardItems((prevCartItems) => {
+  const addToCart = (menuItem: MenuItemType) => {
+    setCartItems((prevCartItems) => {
       const existingCartItem = prevCartItems.find(
         (cartItem) => cartItem._id === menuItem._id
       );
+
       let updatedCartItems;
+
       if (existingCartItem) {
-        updatedCartItems = prevCartItems.map((cartItem) => {
-          // Return updated item when condition matches
-          return cartItem._id === menuItem._id
+        updatedCartItems = prevCartItems.map((cartItem) =>
+          cartItem._id === menuItem._id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem;
-        });
+            : cartItem
+        );
       } else {
         updatedCartItems = [
           ...prevCartItems,
@@ -50,42 +54,66 @@ const DetailPage = () => {
           },
         ];
       }
+
       sessionStorage.setItem(
         `cartItems-${restaurantId}`,
         JSON.stringify(updatedCartItems)
       );
+
       return updatedCartItems;
     });
   };
 
-  const removeFromCart = (cartItem: CardItem) => {
-    setCardItems((prevCartItems) => {
+  const removeFromCart = (cartItem: CartItem) => {
+    setCartItems((prevCartItems) => {
       const updatedCartItems = prevCartItems.filter(
-        (item) => item._id !== cartItem._id
+        (item) => cartItem._id !== item._id
       );
 
       sessionStorage.setItem(
         `cartItems-${restaurantId}`,
         JSON.stringify(updatedCartItems)
       );
+
       return updatedCartItems;
     });
   };
 
-  const onCheckout = (userFormData: UserFormData) => {
-    console.log("userFormData", userFormData);
+  const onCheckout = async (userFormData: UserFormData) => {
+    if (!restaurant) {
+      return;
+    }
+
+    const checkoutData = {
+      cartItems: cartItems.map((cartItem) => ({
+        menuItemId: cartItem._id,
+        name: cartItem.name,
+        quantity: cartItem.quantity.toString(),
+      })),
+      restaurantId: restaurant._id,
+      deliveryDetails: {
+        name: userFormData.name,
+        addressLine1: userFormData.addressLine1,
+        city: userFormData.city,
+        country: userFormData.country,
+        email: userFormData.email as string,
+      },
+    };
+
+    const data = await createCheckoutSession(checkoutData);
+    window.location.href = data.url;
   };
 
   if (isLoading || !restaurant) {
-    return <div>Loading...</div>;
+    return "Loading...";
   }
+
   return (
     <div className="flex flex-col gap-10">
       <AspectRatio ratio={16 / 5}>
         <img
-          className="rounded-md object-cover h-full w-full"
           src={restaurant.imageUrl}
-          alt="restaurant image"
+          className="rounded-md object-cover h-full w-full"
         />
       </AspectRatio>
       <div className="grid md:grid-cols-[4fr_2fr] gap-5 md:px-32">
@@ -96,21 +124,23 @@ const DetailPage = () => {
             <MenuItem
               key={index}
               menuItem={menuItem}
-              addToCard={() => addToCard(menuItem)}
+              addToCard={() => addToCart(menuItem)}
             />
           ))}
         </div>
+
         <div>
           <Card>
             <OrderSummary
-              removeFfromCart={removeFromCart}
               restaurant={restaurant}
-              cardItems={cardItems}
+              cardItems={cartItems}
+              removeFfromCart={removeFromCart}
             />
             <CardFooter>
               <CheckoutButton
-                disabled={cardItems.length === 0}
-                onCheckout={() => onCheckout}
+                disabled={cartItems.length === 0}
+                onCheckout={onCheckout}
+                isLoading={isCheckoutLoading}
               />
             </CardFooter>
           </Card>
