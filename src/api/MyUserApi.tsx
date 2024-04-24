@@ -21,7 +21,6 @@ export const useGetMyUser = () => {
     if (!response.ok) {
       throw new Error("Error getting user");
     }
-    console.log(accessToken);
     return response.json();
   };
   const {
